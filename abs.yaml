@@ -1,0 +1,14 @@
+upload_channels:
+  - sfe1ed40
+
+build_parameters:
+  - "--suppress-variables"
+  - "--skip-existing"
+  - "--error-overlinking"
+  - "--no-test"
+
+channels:
+  - https://staging.continuum.io/prefect/fs/langgraph-prebuilt-feedstock/pr1/dd218c3
+  - https://staging.continuum.io/prefect/fs/langgraph-sdk-feedstock/pr1/77e4a08
+  - https://staging.continuum.io/prefect/fs/langgraph-checkpoint-feedstock/pr1/f2b0be2
+  - https://staging.continuum.io/prefect/fs/ormsgpack-feedstock/pr1/fe28324
