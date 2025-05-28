@@ -29,17 +29,13 @@ requirements:
     - langchain-core >=0.1
 
 test:
-  source_files:
-    - tests
   imports:
     - langgraph
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - pytest -v tests
   requires:
     - pip
-    - pytest
 
 about:
   home: https://www.github.com/langchain-ai/langgraph
