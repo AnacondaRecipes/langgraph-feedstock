@@ -1,16 +1,16 @@
-From a5263ea30e6e06b7a302b683aba3691cbe5d0b06 Mon Sep 17 00:00:00 2001
+From bae1733372720b1344a29b6fc2dcf7c29294e357 Mon Sep 17 00:00:00 2001
 From: Andrii Osipov <aosipov@anaconda.com>
 Date: Mon, 2 Jun 2025 03:08:56 -0700
 Subject: [PATCH] removed pool and unavailable checkpointers
 
 ---
- tests/conftest.py              | 188 ++++++++++++++++-----------------
+ tests/conftest.py              | 196 ++++++++++++++++-----------------
  tests/conftest_checkpointer.py |  16 +--
  tests/conftest_store.py        |   2 +-
- 3 files changed, 103 insertions(+), 103 deletions(-)
+ 3 files changed, 107 insertions(+), 107 deletions(-)
 
 diff --git a/tests/conftest.py b/tests/conftest.py
-index 8ca3a8d..e906525 100644
+index 8ca3a8d..ed66c1d 100644
 --- a/tests/conftest.py
 +++ b/tests/conftest.py
 @@ -10,31 +10,31 @@ from pytest_mock import MockerFixture
@@ -204,6 +204,21 @@ index 8ca3a8d..e906525 100644
      else:
          raise NotImplementedError(f"Unknown checkpointer: {checkpointer_name}")
  
+@@ -239,10 +239,10 @@ def sync_checkpointer(
+     scope="function",
+     params=[
+         "memory",
+-        "sqlite_aio",
+-        "postgres_aio",
+-        "postgres_aio_pipe",
+-        "postgres_aio_pool",
++        #"sqlite_aio",
++        #"postgres_aio",
++        #"postgres_aio_pipe",
++        #"postgres_aio_pool",
+     ],
+ )
+ async def async_checkpointer(
 @@ -252,36 +252,36 @@ async def async_checkpointer(
      if checkpointer_name == "memory":
          with _checkpointer_memory() as checkpointer:
