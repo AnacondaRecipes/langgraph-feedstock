@@ -8,17 +8,25 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/langgraph-{{ version }}.tar.gz
   sha256: 8948a35f6f85805c8ac36e94d5492c86a34c39dcf6f405b0f84491bc444e3479
+  patches:
+    # E   ModuleNotFoundError: No module named 'psycopg-pool'
+    # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
+    # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-sqlite'
+    - patches/0001-removed-pool-and-unavailable-checkpointers.patch
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: True  # [py<39]
 
 requirements:
+  build:
+    - patch  # [not win]
+    - m2-patch  # [win]
   host:
     - python
-    - hatchling
     - pip
+    - hatchling
   run:
     - python
     - pydantic >=2.7.4
@@ -28,15 +36,29 @@ requirements:
     - langgraph-checkpoint >=2.0.26
     - langchain-core >=0.1
 
-# Psycopg version 1 is not available in the main conda channel, but the conftest.py configuration requires psycopg v1 to enable tests, creating an unresolvable dependency.
+# E   ModuleNotFoundError: No module named 'syrupy'
+{% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
+# E   NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
+{% set tests_to_skip = "test_interruption_without_state_updates_async" %}
+
 test:
+  source_files:
+    - tests
   imports:
     - langgraph
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests
   requires:
     - pip
+    - pytest
+    - pytest-asyncio
+    - pytest-mock
+    - psycopg
 
 about:
   home: https://www.github.com/langchain-ai/langgraph
