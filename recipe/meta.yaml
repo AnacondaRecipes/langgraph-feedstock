@@ -44,8 +44,8 @@ requirements:
 # E   NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
 {% set tests_to_skip = "test_interruption_without_state_updates_async" %}
 # E   httpcore.ConnectError: All connection attempts failed
-{% set tests_to_skip = " or test_remote_graph_basic_invoke" %}
-{% set tests_to_skip = " or test_remote_graph_stream_messages_tuple" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
 
 test:
   source_files:
