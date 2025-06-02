@@ -28,6 +28,7 @@ requirements:
     - langgraph-checkpoint >=2.0.26
     - langchain-core >=0.1
 
+# Psycopg version 1 is not available in the main conda channel, but the conftest.py configuration requires psycopg v1 to enable tests, creating an unresolvable dependency.
 test:
   imports:
     - langgraph
