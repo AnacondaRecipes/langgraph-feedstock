@@ -1,40 +1,38 @@
 {% set name = "langgraph" %}
-{% set version = "0.4.7" %}
+{% set version = "0.6.8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/langgraph-{{ version }}.tar.gz
-  sha256: 8948a35f6f85805c8ac36e94d5492c86a34c39dcf6f405b0f84491bc444e3479
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bdb824bf29e98c3bda73f06eda8f44d10fe766a977f252c92e58ee1a0a83973d
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-sqlite'
+    # E   ModuleNotFoundError: No module named 'langgraph.cache.redis'
     - patches/0001-removed-pool-and-unavailable-checkpointers.patch
 
 build:
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: True  # [py<39]
 
 requirements:
-  build:
-    - patch  # [not win]
-    - m2-patch  # [win]
   host:
     - python
     - pip
     - hatchling
   run:
     - python
-    - pydantic >=2.7.4
-    - python-xxhash >=3.5.0
-    - langgraph-prebuilt >=0.2.0
-    - langgraph-sdk >=0.1.42
-    - langgraph-checkpoint >=2.0.26
     - langchain-core >=0.1
+    - langgraph-checkpoint >=2.1.0,<3.0.0
+    - langgraph-sdk >=0.2.2,<0.3.0
+    - langgraph-prebuilt >=0.6.0,<0.7.0
+    - python-xxhash >=3.5.0
+    - pydantic >=2.7.4
 
 # E   ModuleNotFoundError: No module named 'syrupy'
 {% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
@@ -46,6 +44,8 @@ requirements:
 # E   httpcore.ConnectError: All connection attempts failed
 {% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
 {% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
+# E           NameError: name '_checkpointer_postgres_pool' is not defined
+{% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
 
 test:
   source_files:
@@ -62,6 +62,7 @@ test:
     - pytest-asyncio
     - pytest-mock
     - psycopg
+    - redis
 
 about:
   home: https://www.github.com/langchain-ai/langgraph
