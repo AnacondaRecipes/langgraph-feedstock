@@ -45,7 +45,11 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
 {% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
 # E           NameError: name '_checkpointer_postgres_pool' is not defined
+# E           NameError: name '_checkpointer_postgres_aio_pool' is not defined
+# E           NameError: name '_checkpointer_sqlite_aes' is not defined
+# E           NameError: name '_checkpointer_sqlite' is not defined
 {% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
 
 test:
   source_files:
