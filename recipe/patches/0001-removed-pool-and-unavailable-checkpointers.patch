@@ -1,20 +1,24 @@
-From 087953d94e580bc4271624e2884e8059bb3c47f9 Mon Sep 17 00:00:00 2001
+From 8050a88aac7a869e3cd7c73310b0a144fad768fb Mon Sep 17 00:00:00 2001
 From: Patryk Kups <pkups@anaconda.com>
-Date: Mon, 6 Oct 2025 16:04:44 +0200
+Date: Mon, 6 Oct 2025 16:23:58 +0200
 Subject: [PATCH] patch
 
 ---
- tests/conftest.py              | 34 +++++++++++++++++-----------------
- tests/conftest_checkpointer.py | 10 +++++-----
+ tests/conftest.py              | 74 +++++++++++++++++-----------------
+ tests/conftest_checkpointer.py | 10 ++---
  tests/conftest_store.py        |  2 +-
- 3 files changed, 23 insertions(+), 23 deletions(-)
+ 3 files changed, 43 insertions(+), 43 deletions(-)
 
 diff --git a/tests/conftest.py b/tests/conftest.py
-index 2e2857a..e719024 100644
+index 2e2857a..06f0d35 100644
 --- a/tests/conftest.py
 +++ b/tests/conftest.py
-@@ -6,8 +6,8 @@ import pytest
- import redis
+@@ -3,11 +3,11 @@ from collections.abc import AsyncIterator, Iterator
+ from uuid import UUID
+ 
+ import pytest
+-import redis
++# import redis
  from langgraph.cache.base import BaseCache
  from langgraph.cache.memory import InMemoryCache
 -from langgraph.cache.redis import RedisCache
@@ -64,6 +68,51 @@ index 2e2857a..e719024 100644
  )
  
  NO_DOCKER = os.getenv("NO_DOCKER", "false") == "true"
+@@ -66,25 +66,25 @@ def cache(request: pytest.FixtureRequest) -> Iterator[BaseCache]:
+         yield SqliteCache(path=":memory:")
+     elif request.param == "memory":
+         yield InMemoryCache()
+-    elif request.param == "redis":
+-        # Get worker ID for parallel test isolation
+-        worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
+-
+-        redis_client = redis.Redis(
+-            host="localhost", port=6379, db=0, decode_responses=False
+-        )
+-        # Use worker-specific prefix to avoid cache pollution between parallel tests
+-        cache = RedisCache(redis_client, prefix=f"test:cache:{worker_id}:")
+-        yield cache
+-
+-        try:
+-            # Only clear keys with our specific prefix
+-            pattern = f"test:cache:{worker_id}:*"
+-            keys = redis_client.keys(pattern)
+-            if keys:
+-                redis_client.delete(*keys)
+-        except Exception:
+-            pass
++    # elif request.param == "redis":
++    #     # Get worker ID for parallel test isolation
++    #     worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
++
++    #     redis_client = redis.Redis(
++    #         host="localhost", port=6379, db=0, decode_responses=False
++    #     )
++    #     # Use worker-specific prefix to avoid cache pollution between parallel tests
++    #     cache = RedisCache(redis_client, prefix=f"test:cache:{worker_id}:")
++    #     yield cache
++
++    #     try:
++    #         # Only clear keys with our specific prefix
++    #         pattern = f"test:cache:{worker_id}:*"
++    #         keys = redis_client.keys(pattern)
++    #         if keys:
++    #             redis_client.delete(*keys)
++    #     except Exception:
++    #         pass
+     else:
+         raise ValueError(f"Unknown cache type: {request.param}")
+ 
 diff --git a/tests/conftest_checkpointer.py b/tests/conftest_checkpointer.py
 index b3644e4..8ee1512 100644
 --- a/tests/conftest_checkpointer.py
