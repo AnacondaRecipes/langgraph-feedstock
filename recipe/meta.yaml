@@ -30,7 +30,8 @@ requirements:
     - langchain-core >=0.1
     - langgraph-checkpoint >=2.1.0,<4.0.0
     - langgraph-sdk >=0.2.2,<0.3.0
-    - langgraph-prebuilt >=1.0.0,<1.1.0
+    # Commented out due to cycle dependency. Will be uncommented with the rebuild, after langgraph-prebuilt is released.
+    # - langgraph-prebuilt >=1.0.0,<1.1.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
 
@@ -59,7 +60,8 @@ test:
   imports:
     - langgraph
   commands:
-    - pip check
+    # Commented out due to cycle dependency. Will be uncommented with the rebuild, after langgraph-prebuilt is released.
+    # - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests
   requires:
