@@ -25,9 +25,9 @@ requirements:
     - python
     - pip
     - hatchling
-  # Commented out due to cycle dependency. Will be uncommented with the rebuild, after langgraph-prebuilt is released.
-  # run:
-    # - python
+  run:
+    - python
+    # Commented out due to cycle dependency. Will be uncommented with the rebuild, after langgraph-prebuilt is released.
     # - langchain-core >=0.1
     # - langgraph-checkpoint >=2.1.0,<4.0.0
     # - langgraph-sdk >=0.2.2,<0.3.0
