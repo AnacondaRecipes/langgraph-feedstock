@@ -1,13 +1,31 @@
 {% set name = "langgraph" %}
-{% set version = "1.0.7" %}
+{% set version = "1.1.10" %}
+{% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
+{% set tests_to_skip = "test_interruption_without_state_updates_async" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
+{% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
 
+# E   ModuleNotFoundError: No module named 'syrupy'
+# E   NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
+# E   httpcore.ConnectError: All connection attempts failed
+# E           NameError: name '_checkpointer_postgres_pool' is not defined
+# E           NameError: name '_checkpointer_postgres_aio_pool' is not defined
+# E           NameError: name '_checkpointer_sqlite_aes' is not defined
+# E           NameError: name '_checkpointer_sqlite' is not defined
+# E   TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0cfdfee51e6e8cfe503ecc7367c73933437c505b03fa10a85c710975c8182d9a
+  sha256: 3115beb58203283c98d8752a90c034f3432177d2979a1fe205f76e5f1b744500
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -16,9 +34,9 @@ source:
     - patches/0001-removed-pool-and-unavailable-checkpointers.patch
 
 build:
-  number: 2
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<310]
+  skip: true  # [py<310]
 
 requirements:
   host:
@@ -33,25 +51,6 @@ requirements:
     - langgraph-prebuilt >=1.0.7,<1.1.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
-
-# E   ModuleNotFoundError: No module named 'syrupy'
-{% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
-# E   NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
-{% set tests_to_skip = "test_interruption_without_state_updates_async" %}
-# E   httpcore.ConnectError: All connection attempts failed
-{% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
-{% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
-# E           NameError: name '_checkpointer_postgres_pool' is not defined
-# E           NameError: name '_checkpointer_postgres_aio_pool' is not defined
-# E           NameError: name '_checkpointer_sqlite_aes' is not defined
-# E           NameError: name '_checkpointer_sqlite' is not defined
-{% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
-# E   TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
 
 test:
   source_files:
