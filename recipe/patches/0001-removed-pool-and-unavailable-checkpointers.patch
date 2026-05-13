@@ -1,7 +1,7 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Anaconda Packaging <conda@anaconda.com>
-Date: Tue, 12 May 2026 00:00:00 +0000
-Subject: [PATCH] Disable optional postgres/redis/sqlite checkpointers in tests
+From 8050a88aac7a869e3cd7c73310b0a144fad768fb Mon Sep 17 00:00:00 2001
+From: Patryk Kups <pkups@anaconda.com>
+Date: Mon, 6 Oct 2025 16:23:58 +0200
+Subject: [PATCH] patch
 
 Avoid optional langgraph checkpoint/store extras not shipped in this recipe.
 ---
