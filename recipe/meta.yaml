@@ -1,5 +1,5 @@
 {% set name = "langgraph" %}
-{% set version = "1.2.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4a9baaf62afc5d5f63144a50095140a34b9aa9b7cea695d25326d564775348e7
+  sha256: 785c3b5602514e7327170823343a612c752829082626268c0e39c42495a70281
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -27,7 +27,6 @@ requirements:
     - hatchling
   run:
     - python
-    # langgraph 1.2.0 (PyPI) requires langchain-core>=1.4.0,<2; ship langchain-core 1.4+ and langchain-protocol on channel first.
     - langchain-core >=1.4.0,<2
     - langgraph-checkpoint >=4.1.0,<5.0.0
     - langgraph-sdk >=0.3.0,<0.4.0
