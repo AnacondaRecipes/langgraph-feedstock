@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 785c3b5602514e7327170823343a612c752829082626268c0e39c42495a70281
+  sha256: 28314f844678d9d307cbd63e7b48b0145bf17177d84b40ee2921061e07b6f966
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
