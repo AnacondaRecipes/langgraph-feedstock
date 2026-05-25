@@ -30,6 +30,7 @@ requirements:
     - langchain-core >=1.4.0,<2
     - langgraph-checkpoint >=4.1.0,<5.0.0
     - langgraph-sdk >=0.3.0,<0.4.0
+    # langgraph 1.2.1: https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/pyproject.toml
     - langgraph-prebuilt >=1.1.0,<1.2.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
