@@ -58,6 +58,9 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
 # E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
+# E NameError: name '_checkpointer_postgres*' is not defined (Windows: `set NO_DOCKER=true &&`
+#   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
+{% set tests_to_skip_win = tests_to_skip + " or postgres" %}
 
 test:
   source_files:
@@ -68,7 +71,7 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - export NO_DOCKER=true && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [not win]
-    - set NO_DOCKER=true && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [win]
+    - set "NO_DOCKER=true" && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip_win }})" tests  # [win]
   requires:
     - pip
     - pytest
