@@ -3,14 +3,14 @@ From: Patryk Kups <pkups@anaconda.com>
 Date: Mon, 6 Oct 2025 16:23:58 +0200
 Subject: [PATCH] patch
 
-Avoid optional langgraph checkpoint/store extras not shipped in this recipe.
+Avoid optional langgraph checkpoint/store/cache extras not shipped in this recipe.
 ---
 diff --git a/tests/conftest_checkpointer.py b/tests/conftest_checkpointer.py
 --- a/tests/conftest_checkpointer.py
 +++ b/tests/conftest_checkpointer.py
 @@ -3,14 +3,14 @@
  from uuid import uuid4
- 
+
  import pytest
 -from langgraph.checkpoint.postgres import PostgresSaver
 -from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
@@ -25,23 +25,24 @@ diff --git a/tests/conftest_checkpointer.py b/tests/conftest_checkpointer.py
  from psycopg import AsyncConnection, Connection
 -from psycopg_pool import AsyncConnectionPool, ConnectionPool
 +# from psycopg_pool import AsyncConnectionPool, ConnectionPool
- 
+
  pytest.register_assert_rewrite("tests.memory_assert")
- 
+
 diff --git a/tests/conftest.py b/tests/conftest.py
 --- a/tests/conftest.py
 +++ b/tests/conftest.py
 @@ -3,10 +3,10 @@
  from uuid import UUID
- 
+
  import pytest
 -import redis
 +# import redis
  from langgraph.cache.base import BaseCache
  from langgraph.cache.memory import InMemoryCache
 -from langgraph.cache.redis import RedisCache
+-from langgraph.cache.sqlite import SqliteCache
 +# from langgraph.cache.redis import RedisCache
- from langgraph.cache.sqlite import SqliteCache
++# from langgraph.cache.sqlite import SqliteCache
  from langgraph.checkpoint.base import BaseCheckpointSaver
  from langgraph.store.base import BaseStore
 @@ -16,24 +16,24 @@
@@ -82,11 +83,15 @@ diff --git a/tests/conftest.py b/tests/conftest.py
 +    # _store_postgres_pipe,
 +    # _store_postgres_pool,
  )
- 
+
  NO_DOCKER = os.getenv("NO_DOCKER", "false") == "true"
-@@ -66,25 +66,25 @@
-         yield SqliteCache(path=":memory:")
-     elif request.param == "memory":
+@@ -65,25 +65,25 @@
+-    if request.param == "sqlite":
+-        yield SqliteCache(path=":memory:")
+-    elif request.param == "memory":
++    # if request.param == "sqlite":
++    #     yield SqliteCache(path=":memory:")
++    if request.param == "memory":
          yield InMemoryCache()
 -    elif request.param == "redis":
 -        # Get worker ID for parallel test isolation
@@ -128,16 +133,15 @@ diff --git a/tests/conftest.py b/tests/conftest.py
 +    #         pass
      else:
          raise ValueError(f"Unknown cache type: {request.param}")
- 
 diff --git a/tests/conftest_store.py b/tests/conftest_store.py
 --- a/tests/conftest_store.py
 +++ b/tests/conftest_store.py
 @@ -2,7 +2,7 @@
  from uuid import uuid4
- 
+
  from langgraph.store.memory import InMemoryStore
 -from langgraph.store.postgres import AsyncPostgresStore, PostgresStore
 +# from langgraph.store.postgres import AsyncPostgresStore, PostgresStore
  from psycopg import AsyncConnection, Connection
- 
+
  DEFAULT_POSTGRES_URI = "postgres://postgres:postgres@localhost:5442/"
