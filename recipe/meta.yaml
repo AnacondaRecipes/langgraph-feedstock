@@ -61,7 +61,7 @@ requirements:
 
 # E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
 #   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
-{% set tests_to_skip_win = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
 # E NameError: name '_checkpointer_postgres*' is not defined (Windows: `set NO_DOCKER=true &&`
 #   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
 {% set tests_to_skip_win = tests_to_skip_win + " or postgres" %}
