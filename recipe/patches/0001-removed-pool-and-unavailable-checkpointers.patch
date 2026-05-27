@@ -3,19 +3,37 @@ From: Patryk Kups <pkups@anaconda.com>
 Date: Mon, 6 Oct 2025 16:23:58 +0200
 Subject: [PATCH] patch
 
+Avoid optional langgraph checkpoint/store/cache extras not shipped in this recipe.
 ---
- tests/conftest.py              | 74 +++++++++++++++++-----------------
- tests/conftest_checkpointer.py | 10 ++---
- tests/conftest_store.py        |  2 +-
- 3 files changed, 43 insertions(+), 43 deletions(-)
+diff --git a/tests/conftest_checkpointer.py b/tests/conftest_checkpointer.py
+--- a/tests/conftest_checkpointer.py
++++ b/tests/conftest_checkpointer.py
+@@ -3,14 +3,14 @@
+ from uuid import uuid4
+
+ import pytest
+-from langgraph.checkpoint.postgres import PostgresSaver
+-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
++# from langgraph.checkpoint.postgres import PostgresSaver
++# from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+ from langgraph.checkpoint.serde.encrypted import EncryptedSerializer
+ from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+-from langgraph.checkpoint.sqlite import SqliteSaver
+-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
++# from langgraph.checkpoint.sqlite import SqliteSaver
++# from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+ from psycopg import AsyncConnection, Connection
+-from psycopg_pool import AsyncConnectionPool, ConnectionPool
++# from psycopg_pool import AsyncConnectionPool, ConnectionPool
+
+ pytest.register_assert_rewrite("tests.memory_assert")
 
 diff --git a/tests/conftest.py b/tests/conftest.py
-index 2e2857a..06f0d35 100644
 --- a/tests/conftest.py
 +++ b/tests/conftest.py
-@@ -3,11 +3,11 @@ from collections.abc import AsyncIterator, Iterator
+@@ -3,10 +3,10 @@
  from uuid import UUID
- 
+
  import pytest
 -import redis
 +# import redis
@@ -27,8 +45,7 @@ index 2e2857a..06f0d35 100644
 +# from langgraph.cache.sqlite import SqliteCache
  from langgraph.checkpoint.base import BaseCheckpointSaver
  from langgraph.store.base import BaseStore
- from pytest_mock import MockerFixture
-@@ -16,24 +16,24 @@ from langgraph.types import Durability
+@@ -16,24 +16,24 @@
  from tests.conftest_checkpointer import (
      _checkpointer_memory,
      _checkpointer_memory_migrate_sends,
@@ -66,11 +83,15 @@ index 2e2857a..06f0d35 100644
 +    # _store_postgres_pipe,
 +    # _store_postgres_pool,
  )
- 
+
  NO_DOCKER = os.getenv("NO_DOCKER", "false") == "true"
-@@ -66,25 +66,25 @@ def cache(request: pytest.FixtureRequest) -> Iterator[BaseCache]:
-         yield SqliteCache(path=":memory:")
-     elif request.param == "memory":
+@@ -65,25 +65,25 @@
+-    if request.param == "sqlite":
+-        yield SqliteCache(path=":memory:")
+-    elif request.param == "memory":
++    # if request.param == "sqlite":
++    #     yield SqliteCache(path=":memory:")
++    if request.param == "memory":
          yield InMemoryCache()
 -    elif request.param == "redis":
 -        # Get worker ID for parallel test isolation
@@ -94,14 +115,14 @@ index 2e2857a..06f0d35 100644
 +    # elif request.param == "redis":
 +    #     # Get worker ID for parallel test isolation
 +    #     worker_id = getattr(request.config, "workerinput", {}).get("workerid", "master")
-+
++    #
 +    #     redis_client = redis.Redis(
 +    #         host="localhost", port=6379, db=0, decode_responses=False
 +    #     )
 +    #     # Use worker-specific prefix to avoid cache pollution between parallel tests
 +    #     cache = RedisCache(redis_client, prefix=f"test:cache:{worker_id}:")
 +    #     yield cache
-+
++    #
 +    #     try:
 +    #         # Only clear keys with our specific prefix
 +    #         pattern = f"test:cache:{worker_id}:*"
@@ -112,43 +133,15 @@ index 2e2857a..06f0d35 100644
 +    #         pass
      else:
          raise ValueError(f"Unknown cache type: {request.param}")
- 
-diff --git a/tests/conftest_checkpointer.py b/tests/conftest_checkpointer.py
-index b3644e4..8ee1512 100644
---- a/tests/conftest_checkpointer.py
-+++ b/tests/conftest_checkpointer.py
-@@ -3,13 +3,13 @@ from contextlib import asynccontextmanager, contextmanager
- from uuid import uuid4
- 
- import pytest
--from langgraph.checkpoint.postgres import PostgresSaver
--from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-+# from langgraph.checkpoint.postgres import PostgresSaver
-+# from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
- from langgraph.checkpoint.serde.encrypted import EncryptedSerializer
--from langgraph.checkpoint.sqlite import SqliteSaver
--from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-+# from langgraph.checkpoint.sqlite import SqliteSaver
-+# from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
- from psycopg import AsyncConnection, Connection
--from psycopg_pool import AsyncConnectionPool, ConnectionPool
-+# from psycopg_pool import AsyncConnectionPool, ConnectionPool
- 
- pytest.register_assert_rewrite("tests.memory_assert")
- 
 diff --git a/tests/conftest_store.py b/tests/conftest_store.py
-index ac168cf..ddbcbc1 100644
 --- a/tests/conftest_store.py
 +++ b/tests/conftest_store.py
-@@ -4,7 +4,7 @@ from uuid import uuid4
- 
- import pytest
+@@ -2,7 +2,7 @@
+ from uuid import uuid4
+
  from langgraph.store.memory import InMemoryStore
 -from langgraph.store.postgres import AsyncPostgresStore, PostgresStore
 +# from langgraph.store.postgres import AsyncPostgresStore, PostgresStore
  from psycopg import AsyncConnection, Connection
- 
- DEFAULT_POSTGRES_URI = "postgres://postgres:postgres@localhost:5442/"
--- 
-2.39.5 (Apple Git-154)
 
+ DEFAULT_POSTGRES_URI = "postgres://postgres:postgres@localhost:5442/"
