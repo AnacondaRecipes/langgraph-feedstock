@@ -1,13 +1,43 @@
 {% set name = "langgraph" %}
-{% set version = "1.2.6" %}
+{% set version = "1.2.11" %}
+{% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
+{% set tests_to_skip = "test_interruption_without_state_updates_async" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
+{% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
+{% set tests_to_skip = tests_to_skip + " or sqlite_aes or sqlite" %}
+{% set tests_to_skip = tests_to_skip + " or test_error_handler_resumes_after_crash_multiple_nodes" %}
+{% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
+{% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
+{% set tests_to_skip_win = "tests_to_skip" %}
+{% set tests_to_skip_win = tests_to_skip_win + " or postgres" %}
 
+# E ModuleNotFoundError: No module named 'syrupy'
+# E NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
+# E httpcore.ConnectError: All connection attempts failed
+# E NameError: name '_checkpointer_postgres_pool' is not defined
+# E NameError: name '_checkpointer_postgres_aio_pool' is not defined
+# E NameError: name '_checkpointer_sqlite' is not defined
+# E NameError: name '_checkpointer_sqlite_aes' is not defined
+# E ModuleNotFoundError: No module named 'langgraph.cache.sqlite'
+# E ModuleNotFoundError: No module named 'langgraph.cache.redis'
+# E AssertionError in test_retry.py (unrelated, likely flaky on shared runners)
+# E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
+# E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
+#   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
+# E NameError: name '_checkpointer_postgres*' is not defined (Windows: `set NO_DOCKER=true &&`
+#   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f9b45a34f13930c94d96cdb76277447ad2cc70ec2d18cd2764d7fdadb36cdc1b
+  sha256: 9ecfe11e50d338b34b15cf4d8a442642de103e8ae6971320efba84e4542eb363
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -34,38 +64,6 @@ requirements:
     - langgraph-prebuilt >=1.1.0,<1.2.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
-
-# E ModuleNotFoundError: No module named 'syrupy'
-{% set ignore_tests = " --ignore=tests/test_large_cases.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
-# E NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
-{% set tests_to_skip = "test_interruption_without_state_updates_async" %}
-# E httpcore.ConnectError: All connection attempts failed
-{% set tests_to_skip = tests_to_skip + " or test_remote_graph_basic_invoke" %}
-{% set tests_to_skip = tests_to_skip + " or test_remote_graph_stream_messages_tuple" %}
-# E NameError: name '_checkpointer_postgres_pool' is not defined
-# E NameError: name '_checkpointer_postgres_aio_pool' is not defined
-# E NameError: name '_checkpointer_sqlite' is not defined
-# E NameError: name '_checkpointer_sqlite_aes' is not defined
-# E ModuleNotFoundError: No module named 'langgraph.cache.sqlite'
-# E ModuleNotFoundError: No module named 'langgraph.cache.redis'
-{% set tests_to_skip = tests_to_skip + " or sqlite_aes or sqlite" %}
-# E AssertionError in test_retry.py (unrelated, likely flaky on shared runners)
-{% set tests_to_skip = tests_to_skip + " or test_error_handler_resumes_after_crash_multiple_nodes" %}
-{% set tests_to_skip = tests_to_skip + " or test_interruption_without_state_updates" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_checkpoint_migration.py" %}
-# E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
-
-# E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
-#   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
-{% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
-# E NameError: name '_checkpointer_postgres*' is not defined (Windows: `set NO_DOCKER=true &&`
-#   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
-{% set tests_to_skip_win = tests_to_skip %}
-{% set tests_to_skip_win = tests_to_skip_win + " or postgres" %}
 
 test:
   source_files:
