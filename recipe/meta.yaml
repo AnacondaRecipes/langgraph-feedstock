@@ -64,8 +64,9 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
 
 # E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
-#   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
-{% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
+#   sorts non-deterministically, which breaks the whole time-travel branch family
+#   (https://github.com/langchain-ai/langgraph/blob/1.2.11/libs/langgraph/tests/test_time_travel.py)
+{% set tests_to_skip = tests_to_skip + " or test_fork_creates_branch or test_replay_creates_branch" %}  # [win]
 
 # E AssertionError: first post-migration write dropped on cold read
 {% set tests_to_skip = tests_to_skip + " or test_first_post_migration_write_survives_cold_read" %}
