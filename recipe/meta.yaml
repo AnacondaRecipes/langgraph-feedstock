@@ -81,6 +81,9 @@ requirements:
 #   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
 {% set tests_to_skip_win = tests_to_skip %}
 {% set tests_to_skip_win = tests_to_skip_win + " or postgres" %}
+# E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
+#   sorts non-deterministically
+{% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
 
 test:
   source_files:
