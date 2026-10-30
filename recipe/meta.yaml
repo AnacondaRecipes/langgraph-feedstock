@@ -1,5 +1,5 @@
 {% set name = "langgraph" %}
-{% set version = "1.2.11" %}
+{% set version = "1.2.18" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9ecfe11e50d338b34b15cf4d8a442642de103e8ae6971320efba84e4542eb363
+  sha256: 4c3e4289043ed0f99625a09990a012d7b16bb576301d8616810de7db01725f9e
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -28,8 +28,8 @@ requirements:
   run:
     - python
     - langchain-core >=1.4.7,<2
-    - langgraph-checkpoint >=4.1.0,<5.0.0
-    - langgraph-sdk >=0.4.2,<0.5.0
+    - langgraph-checkpoint >=4.3.0,<5.0.0
+    - langgraph-sdk >=0.4.6,<0.5.0
     - langgraph-prebuilt >=1.1.0,<1.2.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
@@ -39,6 +39,9 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_large_cases_async.py" %}
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel.py" %}
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_pregel_async.py" %}
+# E   ModuleNotFoundError: No module named 'langgraph.checkpoint.postgres'
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_prune_postgres.py" %}
+
 
 # E NotImplementedError: Unknown checkpointer: postgres_aio_pool -> No module named 'psycopg-pool'
 {% set tests_to_skip = "test_interruption_without_state_updates_async" %}
@@ -87,8 +90,8 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - export NO_DOCKER=true && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [not win]
-    - set "NO_DOCKER=true" && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip_win }})" tests  # [win]
+    - export NO_DOCKER=true && pytest -vv {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [not win]
+    - set "NO_DOCKER=true" && pytest -vv {{ ignore_tests }} -k "not ({{ tests_to_skip_win }})" tests  # [win]
   requires:
     - pip
     - pytest
@@ -96,6 +99,7 @@ test:
     - pytest-mock
     - psycopg
     - redis
+    - langgraph-checkpoint
 
 about:
   home: https://github.com/langchain-ai/langgraph
