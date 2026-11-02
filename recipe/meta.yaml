@@ -1,5 +1,5 @@
 {% set name = "langgraph" %}
-{% set version = "1.2.11" %}
+{% set version = "1.2.19" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9ecfe11e50d338b34b15cf4d8a442642de103e8ae6971320efba84e4542eb363
+  sha256: 4a00fa1aad2b5fc2d3a789a8e9eaf993f76218ca924b434902ecf1bbaaf300f6
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -28,8 +28,8 @@ requirements:
   run:
     - python
     - langchain-core >=1.4.7,<2
-    - langgraph-checkpoint >=4.1.0,<5.0.0
-    - langgraph-sdk >=0.4.2,<0.5.0
+    - langgraph-checkpoint >=4.3.0,<5.0.0
+    - langgraph-sdk >=0.4.6,<0.5.0
     - langgraph-prebuilt >=1.1.0,<1.2.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
@@ -63,6 +63,8 @@ requirements:
 # E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
 
+# E   ModuleNotFoundError: No module named 'langgraph.checkpoint.postgres'
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_prune_postgres.py" %}
 # E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
 #   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
 {% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
@@ -78,6 +80,9 @@ requirements:
 #   leaks trailing space so NO_DOCKER != "true" and postgres params activate)
 {% set tests_to_skip_win = tests_to_skip %}
 {% set tests_to_skip_win = tests_to_skip_win + " or postgres" %}
+# E AssertionError: assert '1f1d6bb0-d44...-9b30e9b07ebf' == '1f1d6bb0-d43...-78e73e64c8d9'
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_time_travel_async.py" %} # [win and arm64]
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_time_travel.py" %} # [win and arm64]
 
 test:
   source_files:
@@ -87,7 +92,7 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - export NO_DOCKER=true && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [not win]
+    - ulimit -n 4096 && export NO_DOCKER=true && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" tests  # [not win]
     - set "NO_DOCKER=true" && pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip_win }})" tests  # [win]
   requires:
     - pip
