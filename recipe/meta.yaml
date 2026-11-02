@@ -62,6 +62,10 @@ requirements:
 
 # E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
+# E   OSError: [Errno 24] Too many open files
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_time_travel.py" %} # [osx]
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_trace_policy.py" %} # [osx]
+{% set tests_to_skip = tests_to_skip + " or test_async_tool_produces_events" %} # [osx]
 
 # E   ModuleNotFoundError: No module named 'langgraph.checkpoint.postgres'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_prune_postgres.py" %}
