@@ -1,5 +1,5 @@
 {% set name = "langgraph" %}
-{% set version = "1.2.11" %}
+{% set version = "1.2.18" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 9ecfe11e50d338b34b15cf4d8a442642de103e8ae6971320efba84e4542eb363
+  sha256: 4c3e4289043ed0f99625a09990a012d7b16bb576301d8616810de7db01725f9e
   patches:
     # E   ModuleNotFoundError: No module named 'psycopg-pool'
     # E   ModuleNotFoundError: No module named 'langgraph-checkpoint-postgres'
@@ -28,8 +28,8 @@ requirements:
   run:
     - python
     - langchain-core >=1.4.7,<2
-    - langgraph-checkpoint >=4.1.0,<5.0.0
-    - langgraph-sdk >=0.4.2,<0.5.0
+    - langgraph-checkpoint >=4.3.0,<5.0.0
+    - langgraph-sdk >=0.4.6,<0.5.0
     - langgraph-prebuilt >=1.1.0,<1.2.0
     - python-xxhash >=3.5.0
     - pydantic >=2.7.4
@@ -63,6 +63,8 @@ requirements:
 # E TypeError: JsonPlusSerializer.__init__() got an unexpected keyword argument 'allowed_json_modules'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_interrupt_migration.py" %}
 
+# E   ModuleNotFoundError: No module named 'langgraph.checkpoint.postgres'
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_prune_postgres.py" %}
 # E AssertionError on Windows: created_at clock granularity collision in MemorySaverAssertImmutable
 #   sorts non-deterministically (https://github.com/langchain-ai/langgraph/blob/1.2.1/libs/langgraph/tests/test_time_travel.py)
 {% set tests_to_skip = tests_to_skip + " or test_replay_creates_branch_preserving_old_checkpoints" %}  # [win]
